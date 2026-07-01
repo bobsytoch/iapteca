@@ -7,14 +7,12 @@ on:
       - feature/**
   workflow_dispatch:
 
-# INTENTIONAL TEST VULNERABILITIES:
-# 1) Hardcoded secret in YAML (dummy value for scanner testing only)
-# 2) All images are pushed as :latest instead of commit-based immutable tags
+# SECURITY FIXES:
+# 1) Removed hardcoded secrets - now using GitHub Actions Secrets to prevent credential leakage
+# 2) Changed image tagging from :latest to :${{ github.sha }} for reproducible builds
 env:
   REGISTRY: docker.io
   IMAGE_NAME: bouncytorch/iapteca
-  DOCKERHUB_USERNAME: bouncytorch
-  DOCKERHUB_TOKEN: dckr_pat_abc123_TEST_ONLY_FAKE_TOKEN_DO_NOT_USE
 
 jobs:
   test-build-and-push:
@@ -57,12 +55,13 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to DockerHub
-        run: echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Build and push Docker image
+        # BUILD SECURITY FIX: Use commit SHA as immutable tag instead of :latest to ensure reproducible builds and prevent image confusion attacks
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --tag ${IMAGE_NAME}:latest \
+            --tag ${IMAGE_NAME}:${{ github.sha }} \
             --push \
             .
