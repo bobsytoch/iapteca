@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.github
+coverage
+vitest.config.ts.timestamp-*
+npm-debug.log*
+pnpm-debug.log*
+Dockerfile*
+README.md
+.env*
