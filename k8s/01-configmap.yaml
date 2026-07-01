@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iapteca-configmap
+  namespace: iapteca
+data:
+  NODE_ENV: "production"
+  MONGODB_URI_READONLY: "mongodb://mongo:27017/iapteca?replicaSet=rs0&directConnection=true"
+  MONGODB_URI_READWRITE: "mongodb://mongo:27017/iapteca?replicaSet=rs0&directConnection=true&writeConcern=majority"
