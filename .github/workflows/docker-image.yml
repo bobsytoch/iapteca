@@ -59,6 +59,7 @@ jobs:
         run: echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
       - name: Build and push Docker image
+        # BUILD SECURITY FIX: Use commit SHA as immutable tag instead of :latest to ensure reproducible builds and prevent image confusion attacks
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
